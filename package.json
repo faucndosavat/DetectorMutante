@@ -1,0 +1,34 @@
+{
+  "name": "detectormutante",
+  "version": "1.0.0",
+  "description": "Node.js Restful API con Express, Sequelize & MySQL.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faucndosavat/DetectorMutante.git"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "sequelize",
+    "mysql",
+    "rest",
+    "api"
+  ],
+  "author": "Facundo Savat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/faucndosavat/DetectorMutante/issues"
+  },
+  "homepage": "https://github.com/faucndosavat/DetectorMutante#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mysql2": "^2.1.0",
+    "sequelize": "^5.21.5"
+  }
+}
