@@ -21,3 +21,5 @@ Si se trata de un mutante la API devolverá un HTTP code 200, caso contrario un 
 6- Para obtener las estadísticas se debe hacer un request tipo GET a http://localhost:8080/stats y la respuesta será, por ejemplo:
 
 {“count_mutant_dna”:40, “count_human_dna”:100: “ratio”:0.4}
+
+* En caso de utilizar el entorno de producción, en los puntos 5 y 6 se debe reemplazar "localhost:8080" por "detectormutante.herokuapp.com"
