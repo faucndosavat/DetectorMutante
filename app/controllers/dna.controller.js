@@ -31,7 +31,7 @@ exports.estadistica = (req, res) => {
         .then(data => {
             const cantidadMutantes = data.filter(secuencia => !!secuencia.esMutante).length;
             const cantidadHumanos = data.length - cantidadMutantes;
-            const ratio = 0;// (cantidadMutantes / cantidadHumanos).toFixed(2);
+            const ratio = (cantidadMutantes / (cantidadHumanos || 1)).toFixed(2);
             res.send({ count_mutant_dna: cantidadMutantes, count_human_dna: cantidadHumanos, ratio: ratio });
         })
         .catch(err => {
