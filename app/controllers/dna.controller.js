@@ -1,28 +1,37 @@
 const db = require("../models");
 const Dna = db.dna;
-const Op = db.Sequelize.Op;
 
 // Analiza si la secuencia es de un mutante o no
 exports.analizar = (req, res) => {
     const cantidadRepeticiones = 4;
-    const secuencia = req.body.dna
-    const esMutante = secuencia && (secuencia.length >= cantidadRepeticiones) ? validarSecuencia(secuencia, cantidadRepeticiones) : false;
-
+    const secuencia = req.body.dna;
+    let esMutante = false;
     const dna = {
         secuencia: secuencia.join('|'),
         esMutante: esMutante,
     };
 
-    Dna.create(dna)
-        .then(data => {
-            res.status(esMutante ? 200 : 403).send();
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Ocurrió un error al guardar la secuencia analizada."
-            });
-        });
+    Dna.findOne({attributes: ['id', ['esMutante', 'esMutante']], where: { secuencia: dna.secuencia } })
+    .then((dnaGuardado) => {
+        if (!dnaGuardado) {
+            esMutante = secuencia && (secuencia.length >= cantidadRepeticiones) ? validarSecuencia(secuencia, cantidadRepeticiones) : false;
+            dna.esMutante = esMutante;
+    
+            Dna.create(dna)
+                .then(() => {
+                    res.status(esMutante ? 200 : 403).send();
+                })
+                .catch(err => {
+                    res.status(500).send({
+                        message:
+                            err.message || "Ocurrió un error al guardar la secuencia analizada."
+                    });
+                });
+        } else {
+            res.status(dnaGuardado.esMutante ? 200 : 403).send();
+        }
+      }); 
+  
 };
 
 // Devuelve la cantidad de DNA mutantes y humanos encontrados
@@ -44,7 +53,7 @@ exports.estadistica = (req, res) => {
 
 validarSecuencia = (secuencia, cantidadRepeticiones) => {
     let cantidadSecuenciasRepetidas = 0;
-    for (var i = 0; i < secuencia.length; i++) {
+    for (let i = 0; i < secuencia.length; i++) {
         cantidadSecuenciasRepetidas += validarDna(secuencia[i]);
         if (cantidadSecuenciasRepetidas >= 2) {
             break;
@@ -52,9 +61,9 @@ validarSecuencia = (secuencia, cantidadRepeticiones) => {
     }
 
     if (cantidadSecuenciasRepetidas < 2) {
-        for (var i = 0; i < secuencia.length; i++) {
-            var combinacion = '';
-            for (var j = 0; j < secuencia.length; j++) {
+        for (let i = 0; i < secuencia.length; i++) {
+            let combinacion = '';
+            for (let j = 0; j < secuencia.length; j++) {
                 combinacion += secuencia[j][i];
             }
             cantidadSecuenciasRepetidas += validarDna(combinacion);
@@ -65,9 +74,9 @@ validarSecuencia = (secuencia, cantidadRepeticiones) => {
     }
 
     if (cantidadSecuenciasRepetidas < 2) {
-        var diagonalPrincipal = '';
-        var diagonalSecundaria = '';
-        for (var i = 0; i < secuencia.length; i++) {
+        let diagonalPrincipal = '';
+        let diagonalSecundaria = '';
+        for (let i = 0; i < secuencia.length; i++) {
             diagonalPrincipal += secuencia[i][i];
             diagonalSecundaria += secuencia[secuencia.length - i - 1][i];
         }
@@ -75,13 +84,13 @@ validarSecuencia = (secuencia, cantidadRepeticiones) => {
         if (cantidadSecuenciasRepetidas < 2) {
             cantidadSecuenciasRepetidas += validarDna(diagonalSecundaria);
             if (cantidadSecuenciasRepetidas < 2 && secuencia.length > cantidadRepeticiones) {
-                var limite = secuencia.length - cantidadRepeticiones;
-                for (var i = 1; i <= limite; i++) {
-                    var combinacionPrincipalInferior = '';
-                    var combinacionSecundariaInferior = '';
-                    var combinacionPrincipalSuperior = '';
-                    var combinacionSecundariaSuperior = '';
-                    for (var j = 0; j < (secuencia.length - i); j++) {
+                const limite = secuencia.length - cantidadRepeticiones;
+                for (let i = 1; i <= limite; i++) {
+                    let combinacionPrincipalInferior = '';
+                    let combinacionSecundariaInferior = '';
+                    let combinacionPrincipalSuperior = '';
+                    let combinacionSecundariaSuperior = '';
+                    for (let j = 0; j < (secuencia.length - i); j++) {
                         combinacionPrincipalInferior += secuencia[j + i][j];
                         combinacionSecundariaInferior += secuencia[j + i][secuencia.length - j - 1];
                         combinacionPrincipalSuperior += secuencia[j][j + i];
@@ -107,10 +116,10 @@ validarSecuencia = (secuencia, cantidadRepeticiones) => {
     }
 
     return (cantidadSecuenciasRepetidas >= 2)
-}
+};
 
 validarDna = (combinacionDna) => {
     const regExp = new RegExp(/([atcg])\1{3}/gm);
     const repeticiones = combinacionDna.toLowerCase().match(regExp);
     return repeticiones ? repeticiones.length : 0;
-}
+};

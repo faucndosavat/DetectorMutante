@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Dna = sequelize.define("dna", {
+  return sequelize.define("dna", {
       id: {
         type: Sequelize.BIGINT(20),
         primaryKey: true,
@@ -14,6 +14,4 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN
       }
     });
-  
-    return Dna;
   };
