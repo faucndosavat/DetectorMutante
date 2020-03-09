@@ -5,24 +5,34 @@ const Op = db.Sequelize.Op;
 // Analiza si la secuencia es de un mutante o no
 exports.analizar = (req, res) => {
     const cantidadRepeticiones = 4;
-    const secuencia = req.body.dna
-    const esMutante = secuencia && (secuencia.length >= cantidadRepeticiones) ? validarSecuencia(secuencia, cantidadRepeticiones) : false;
-
+    const secuencia = req.body.dna;
+    let esMutante = false;
     const dna = {
         secuencia: secuencia.join('|'),
         esMutante: esMutante,
     };
 
-    Dna.create(dna)
-        .then(data => {
-            res.status(esMutante ? 200 : 403).send();
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Ocurrió un error al guardar la secuencia analizada."
-            });
-        });
+    Dna.findOne({attributes: ['id', ['esMutante', 'esMutante']], where: { secuencia: dna.secuencia } })
+    .then((dnaGuardado) => {
+        if (!dnaGuardado) {
+            esMutante = secuencia && (secuencia.length >= cantidadRepeticiones) ? validarSecuencia(secuencia, cantidadRepeticiones) : false;
+            dna.esMutante = esMutante;
+    
+            Dna.create(dna)
+                .then(data => {
+                    res.status(esMutante ? 200 : 403).send();
+                })
+                .catch(err => {
+                    res.status(500).send({
+                        message:
+                            err.message || "Ocurrió un error al guardar la secuencia analizada."
+                    });
+                });
+        } else {
+            res.status(dnaGuardado.esMutante ? 200 : 403).send();
+        }
+      }); 
+  
 };
 
 // Devuelve la cantidad de DNA mutantes y humanos encontrados
